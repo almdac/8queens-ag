@@ -22,6 +22,23 @@ class EightQueens:
 
         return chromosome
     
+    def solution(self):
+        rank = self.rank()
+
+        if rank[0][1] == 1:
+            return rank[0]
+        return None
+
+    def rank(self, sample=None):
+        if sample == None:
+            sample = self._population[:]
+
+        fitness = [self.calculate_fitness(chromosome) for chromosome in sample]
+        rank = [list(r) for r in zip(sample, fitness)]
+        rank.sort(key=lambda item: item[1], reverse=True)
+
+        return rank
+    
     def calculate_fitness(self, chromosome):
         fenotype = self._chromosome_to_fenotype(chromosome)
         penalty = 0
@@ -47,5 +64,11 @@ def main():
     eigth_queens = EightQueens()
 
     eigth_queens.generate_population(100)
+    solution = eigth_queens.solution()
+
+    if solution:
+        return solution
+    return -1
+
 if __name__ == '__main__':
     main()
