@@ -53,8 +53,12 @@ class EightQueens:
 
     def select_random_parents(self, population):
         random_parents = []
-        for i in range(5):
-            random_parents.append(population[random.randint(0,99)])
+        random_positions = []
+        while len(random_parents) < 5:
+            random_position = random.randint(0,6)
+            if random_position not in random_positions:
+                random_positions.append(random_position)
+                random_parents.append(population[random_position])
         return random_parents
 
     def parent_selection(self, population):
@@ -73,6 +77,9 @@ class EightQueens:
             child2 = fenotype_parent2[0:cut_point]
             child1 = self.crossfill(child1,fenotype_parent2,cut_point)
             child2 = self.crossfill(child2,fenotype_parent1,cut_point)
+            if random.random() <= 0.4:
+                self.mutate(child1)
+                self.mutate(child2)
             child1 = self._fenotype_to_chromosome(child1)
             child2 = self._fenotype_to_chromosome(child2)
         else:
@@ -80,6 +87,15 @@ class EightQueens:
             child2 = parents[1]
 
         return [child1,child2]
+    
+    def mutate(self, child):
+        position1 = random.randint(0,7)
+        position2 = random.randint(0,7)
+        while position1 == position2:
+            position1 = random.randint(0,7)
+            position2 = random.randint(0,7)
+        child[position1], child[position2] = child[position2], child[position1]
+        return child
   
     def crossfill(self,child, parent,cut_point):
         index = cut_point
