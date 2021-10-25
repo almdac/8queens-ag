@@ -55,7 +55,7 @@ class EightQueens:
         random_parents = []
         random_positions = []
         while len(random_parents) < 5:
-            random_position = random.randint(0,6)
+            random_position = random.randint(0,99)
             if random_position not in random_positions:
                 random_positions.append(random_position)
                 random_parents.append(population[random_position])
