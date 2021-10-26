@@ -34,7 +34,7 @@ class EightQueens:
             sample = self._population[:]
 
         fitness = [self.calculate_fitness(chromosome) for chromosome in sample]
-        rank = [list(r) for r in zip(sample, fitness)]
+        rank = [list(r) for r in zip(sample, fitness, range(len(sample)))]
         rank.sort(key=lambda item: item[1], reverse=True)
 
         return rank
@@ -105,6 +105,11 @@ class EightQueens:
             index= (index + 1)%8
         return child
 
+    def survivors_selection(self,children):
+        rank = self.rank()
+        self._population[rank[98][2]] = children[0]
+        self._population[rank[99][2]] = children[1]
+        
     def generate_population(self, size):
         fenotype = [0, 1, 2, 3, 4, 5, 6, 7]
         self._population = []
@@ -124,8 +129,12 @@ def main():
     while solution == None and count < 10000:
         parents = eigth_queens.parent_selection(population_fitness)
         children = eigth_queens.cut_and_crossfill(parents)
+        eigth_queens.survivors_selection(children)
+        population_fitness = eigth_queens.rank()
+        solution = eigth_queens.solution()
+        count+=1
     if solution:
-        return solution
+        return solution, count
     return -1
 
 if __name__ == '__main__':
