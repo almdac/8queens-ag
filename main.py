@@ -106,10 +106,16 @@ class EightQueens:
         return child
 
     def survivors_selection(self,children):
+        for child in children:
+            self._population.append(child)
         rank = self.rank()
-        self._population[rank[98][2]] = children[0]
-        self._population[rank[99][2]] = children[1]
-        
+        worsts = []
+        for i in range(len(children)):
+            worsts.append(rank[(len(self._population)-1-i)][2])
+        worsts.sort(reverse=True)
+        for i in worsts:
+            self._population.pop(i)
+
     def generate_population(self, size):
         fenotype = [0, 1, 2, 3, 4, 5, 6, 7]
         self._population = []
