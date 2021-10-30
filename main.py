@@ -1,6 +1,7 @@
 import random
 import textwrap
 import math
+import numpy as np
 
 class EightQueens:
     _population = []
@@ -140,8 +141,23 @@ def main():
         solution = eigth_queens.solution()
         count+=1
     if solution:
-        return solution, count
+        total_converged = len(list(filter(lambda x : x[1] == 1, population_fitness)))
+        return (count, total_converged, calculate_mean(population_fitness,1), calculate_std(population_fitness,1))
     return -1
+
+def calculate_mean(generations, pos):
+    return np.mean(list(map(lambda x : x[pos], generations)))
+
+def calculate_std(generations, pos):
+    return np.std(list(map(lambda x : x[pos], generations)))
 
 if __name__ == '__main__':
     main()
+
+avaliacao = []
+for i in range(30):
+    avaliacao.append(main())
+print("Quantidade de convergências: ", 30 - len(list(filter(lambda x : x[0] == -1, avaliacao))))
+print('Media de iterações que o algoritmo convergiu: ', calculate_mean(avaliacao, 0), ' Desvio Padrão das iterações que o algoritmo convergiu :', calculate_std(avaliacao, 0))
+print('Média de Indivíduos que convergiram por execução : ', calculate_mean(avaliacao, 1))
+print('Media Fitness: ', calculate_mean(avaliacao, 2), ' Desvio Padrão Fitness:', calculate_std(avaliacao, 2))
