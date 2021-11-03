@@ -3,6 +3,7 @@ import textwrap
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from functools import reduce
 
 class EightQueens:
     _population = []
@@ -53,22 +54,35 @@ class EightQueens:
         
         return math.exp(-penalty)
 
-    def select_random_parents(self, population):
-        random_parents = []
-        random_positions = []
-        while len(random_parents) < 5:
-            random_position = random.randint(0,99)
-            if random_position not in random_positions:
-                random_positions.append(random_position)
-                random_parents.append(population[random_position])
-        return random_parents
+    def spin_wheel(self, roleta, sorted_probability):
+        for i, probability in enumerate(roleta):
+            if i > 0:
+                if(sorted_probability <= probability and sorted_probability > roleta[i-1]):
+                    break
+            else:
+                if(sorted_probability <= probability):
+                    break
+        return i
 
     def parent_selection(self, population):
-        parents = self.select_random_parents(population)
-        parents.sort(key=lambda tup: tup[1], reverse=True)
-        selected_parents = parents[0:2]
+        total_fitness = reduce(lambda x,y: x + y[1], population,0)
+        parents = population
+        roleta = []
+        current_probability=0
+        selected_parents = []
+        parents.sort(key=lambda tup: tup[1], reverse=False)
+        for parent in parents:
+            roleta.append(current_probability + (parent[1]/total_fitness)) 
+            current_probability = roleta[-1]
+        selected_parents.append(parents[self.spin_wheel(roleta, random.random())])
+        selected_parents.append(parents[self.spin_wheel(roleta, random.random())])
+        count = 0
+        while(selected_parents[1] == selected_parents[0] and count < 100):
+            selected_parents[1] = parents[self.spin_wheel(roleta, random.random())]
+            count +=1     
         return list(map(lambda tup: tup[0], selected_parents)) 
-    
+
+
     def cut_and_crossfill(self, parents):
         if random.random() <= 0.9:
             fenotype_parent1 = self._chromosome_to_fenotype(parents[0])
