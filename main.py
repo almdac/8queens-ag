@@ -73,23 +73,56 @@ class EightQueens:
         if random.random() <= 0.9:
             fenotype_parent1 = self._chromosome_to_fenotype(parents[0])
             fenotype_parent2 = self._chromosome_to_fenotype(parents[1])
-            cut_point = random.randint(0,6)
 
-            child1 = fenotype_parent1[0:cut_point]
-            child2 = fenotype_parent2[0:cut_point]
-            child1 = self.crossfill(child1,fenotype_parent2,cut_point)
-            child2 = self.crossfill(child2,fenotype_parent1,cut_point)
+            child1 = self.crossfill(fenotype_parent1[0:0],fenotype_parent2,0)
+            child2 = self.crossfill(fenotype_parent2[0:0],fenotype_parent1,0)
+            child3 = self.crossfill(fenotype_parent1[0:1],fenotype_parent2,1)
+            child4 = self.crossfill(fenotype_parent2[0:1],fenotype_parent1,1)
+            child5 = self.crossfill(fenotype_parent1[0:2],fenotype_parent2,2)
+            child6 = self.crossfill(fenotype_parent2[0:2],fenotype_parent1,2)
+            child7 = self.crossfill(fenotype_parent1[0:3],fenotype_parent2,3)
+            child8 = self.crossfill(fenotype_parent2[0:3],fenotype_parent1,3)
+            child9 = self.crossfill(fenotype_parent1[0:4],fenotype_parent2,4)
+            child10 = self.crossfill(fenotype_parent2[0:4],fenotype_parent1,4)
+            child11 = self.crossfill(fenotype_parent1[0:5],fenotype_parent2,5)
+            child12 = self.crossfill(fenotype_parent2[0:5],fenotype_parent1,5)
+            child13 = self.crossfill(fenotype_parent1[0:6],fenotype_parent2,6)
+            child14 = self.crossfill(fenotype_parent2[0:6],fenotype_parent1,6)
             if random.random() <= 0.4:
                 self.mutate(child1)
                 self.mutate(child2)
+                self.mutate(child3)
+                self.mutate(child4)
+                self.mutate(child5)
+                self.mutate(child6)
+                self.mutate(child7)
+                self.mutate(child8)
+                self.mutate(child9)
+                self.mutate(child10)
+                self.mutate(child11)
+                self.mutate(child12)
+                self.mutate(child13)
+                self.mutate(child14)
             child1 = self._fenotype_to_chromosome(child1)
             child2 = self._fenotype_to_chromosome(child2)
+            child3 = self._fenotype_to_chromosome(child3)
+            child4 = self._fenotype_to_chromosome(child4)
+            child5 = self._fenotype_to_chromosome(child5)
+            child6 = self._fenotype_to_chromosome(child6)
+            child7 = self._fenotype_to_chromosome(child7)
+            child8 = self._fenotype_to_chromosome(child8)
+            child9 = self._fenotype_to_chromosome(child9)
+            child10 = self._fenotype_to_chromosome(child10)
+            child11 = self._fenotype_to_chromosome(child11)
+            child12 = self._fenotype_to_chromosome(child12)
+            child13 = self._fenotype_to_chromosome(child13)
+            child14 = self._fenotype_to_chromosome(child14)
+            return [child1,child2,child3,child4,child5,child6,child7,child8,child9,child10,child11,child12,child13,child14]
         else:
             child1 = parents[0]
             child2 = parents[1]
+            return [child1,child2]
 
-        return [child1,child2]
-    
     def mutate(self, child):
         position1 = random.randint(0,7)
         position2 = random.randint(0,7)
@@ -108,8 +141,9 @@ class EightQueens:
         return child
 
     def survivors_selection(self,children):
+        children = self.rank(children)[:2]
         for child in children:
-            self._population.append(child)
+            self._population.append(child[0])
         rank = self.rank()
         worsts = []
         for i in range(len(children)):
