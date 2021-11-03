@@ -69,16 +69,19 @@ class EightQueens:
         selected_parents = parents[0:2]
         return list(map(lambda tup: tup[0], selected_parents)) 
     
-    def cut_and_crossfill(self, parents):
+    def order_1_crossing(self, parents):
         if random.random() <= 0.9:
             fenotype_parent1 = self._chromosome_to_fenotype(parents[0])
             fenotype_parent2 = self._chromosome_to_fenotype(parents[1])
-            cut_point = random.randint(0,6)
+            cut_point1 = random.randint(0,5)
+            cut_point2 = random.randint(cut_point1+1,7)
 
-            child1 = fenotype_parent1[0:cut_point]
-            child2 = fenotype_parent2[0:cut_point]
-            child1 = self.crossfill(child1,fenotype_parent2,cut_point)
-            child2 = self.crossfill(child2,fenotype_parent1,cut_point)
+            child1 = [None]*8
+            child2 = [None]*8
+            child1[cut_point1:cut_point2] = fenotype_parent1[cut_point1:cut_point2]
+            child2[cut_point1:cut_point2] = fenotype_parent2[cut_point1:cut_point2]
+            child1 = self.crossing(child1,fenotype_parent2,cut_point1,cut_point2)
+            child2 = self.crossing(child2,fenotype_parent1,cut_point1,cut_point2)
             if random.random() <= 0.4:
                 self.mutate(child1)
                 self.mutate(child2)
@@ -90,6 +93,16 @@ class EightQueens:
 
         return [child1,child2]
     
+    def crossing(self,child, parent,cut_point1,cut_point2):
+        indexParent = cut_point2
+        indexChild = cut_point2
+        while(indexChild != cut_point1):
+            if not(parent[indexParent] in child):
+                child[indexChild] = parent[indexParent]
+                indexChild= (indexChild + 1)%8
+            indexParent= (indexParent + 1)%8
+        return child
+    
     def mutate(self, child):
         position1 = random.randint(0,7)
         position2 = random.randint(0,7)
@@ -99,14 +112,6 @@ class EightQueens:
         child[position1], child[position2] = child[position2], child[position1]
         return child
   
-    def crossfill(self,child, parent,cut_point):
-        index = cut_point
-        while(len(child) < 8):
-            if not(parent[index] in child):
-                child.append(parent[index])
-            index= (index + 1)%8
-        return child
-
     def survivors_selection(self,children):
         for child in children:
             self._population.append(child)
@@ -136,7 +141,7 @@ def main():
     count = 0
     while solution == None and count < 10000:
         parents = eigth_queens.parent_selection(population_fitness)
-        children = eigth_queens.cut_and_crossfill(parents)
+        children = eigth_queens.order_1_crossing(parents)
         eigth_queens.survivors_selection(children)
         population_fitness = eigth_queens.rank()
         solution = eigth_queens.solution()
