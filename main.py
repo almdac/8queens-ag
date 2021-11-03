@@ -2,6 +2,7 @@ import random
 import textwrap
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 
 class EightQueens:
     _population = []
@@ -140,10 +141,8 @@ def main():
         population_fitness = eigth_queens.rank()
         solution = eigth_queens.solution()
         count+=1
-    if solution:
-        total_converged = len(list(filter(lambda x : x[1] == 1, population_fitness)))
-        return (count, total_converged, calculate_mean(population_fitness,1), calculate_std(population_fitness,1))
-    return -1
+    total_converged = len(list(filter(lambda x : x[1] == 1, population_fitness)))
+    return (count, total_converged, calculate_mean(population_fitness,1), calculate_std(population_fitness,1), max(list(map(lambda x : x[1], population_fitness))))
 
 def calculate_mean(generations, pos):
     return np.mean(list(map(lambda x : x[pos], generations)))
@@ -151,13 +150,37 @@ def calculate_mean(generations, pos):
 def calculate_std(generations, pos):
     return np.std(list(map(lambda x : x[pos], generations)))
 
-if __name__ == '__main__':
-    main()
+def plotFig(generations, pos,name, xlabel, ylabel):
+    iterations = list(map(lambda x : x[pos], generations))
+    fig = plt.figure()
+    plt.plot(iterations)
+    plt.title(name)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+    fig.savefig(name, dpi=fig.dpi)
 
-avaliacao = []
-for i in range(30):
-    avaliacao.append(main())
-print("Quantidade de convergências: ", 30 - len(list(filter(lambda x : x[0] == -1, avaliacao))))
-print('Media de iterações que o algoritmo convergiu: ', calculate_mean(avaliacao, 0), ' Desvio Padrão das iterações que o algoritmo convergiu :', calculate_std(avaliacao, 0))
-print('Média de Indivíduos que convergiram por execução : ', calculate_mean(avaliacao, 1))
-print('Media Fitness: ', calculate_mean(avaliacao, 2), ' Desvio Padrão Fitness:', calculate_std(avaliacao, 2))
+if __name__ == '__main__':
+    avaliacao = []
+    for i in range(30):
+        avaliacao.append(main())
+
+    converged_by_sample = list(filter(lambda x : x[1] != 0, avaliacao))
+
+    print("Quantidade de convergências: ", len(converged_by_sample))
+    
+    print('Média de iterações que o algoritmo convergiu: ', calculate_mean(converged_by_sample, 0), ' Desvio Padrão das iterações que o algoritmo convergiu :', calculate_std(converged_by_sample, 0))
+    
+    print('Número de indivíduos que convergiram por execução:')
+    for i, a in enumerate(avaliacao):
+        print(f"Iteração {i}: {a[1]}")
+    
+    print('Fitness médio da população em cada uma das execuções:')
+    for i, a in enumerate(avaliacao):
+        print(f"Iteração {i}: {a[2]}")
+    
+    plotFig(avaliacao, 0, 'Gráfico de convergência com a média de iterações por execução', 'Execução', 'Média de iterações')
+
+    plotFig(avaliacao, 4, 'Gráfico de convergência com o melhor indivíduo por execução', 'Execução', 'Melhor indivídio')
+    
+    print('Media Fitness: ', calculate_mean(avaliacao, 2), ' Desvio Padrão Fitness:', calculate_std(avaliacao, 2))
