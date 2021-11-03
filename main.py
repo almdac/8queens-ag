@@ -107,16 +107,15 @@ class EightQueens:
             index= (index + 1)%8
         return child
 
-    def survivors_selection(self,children):
-        for child in children:
-            self._population.append(child)
-        rank = self.rank()
-        worsts = []
-        for i in range(len(children)):
-            worsts.append(rank[(len(self._population)-1-i)][2])
-        worsts.sort(reverse=True)
-        for i in worsts:
-            self._population.pop(i)
+    def survivors_selection(self, population, parents):
+        checksum = 0
+        for parent in parents:
+            for i in range(len(population)):
+                if parent == population[i][0]:
+                    population.pop(i)
+                    checksum += 1
+                    break
+        return population
 
     def generate_population(self, size):
         fenotype = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -137,7 +136,9 @@ def main():
     while solution == None and count < 10000:
         parents = eigth_queens.parent_selection(population_fitness)
         children = eigth_queens.cut_and_crossfill(parents)
-        eigth_queens.survivors_selection(children)
+        population_fitness.append(children[0])
+        population_fitness.append(children[1])
+        eigth_queens.survivors_selection(population_fitness, parents)
         population_fitness = eigth_queens.rank()
         solution = eigth_queens.solution()
         count+=1
