@@ -57,7 +57,7 @@ class EightQueens:
         random_parents = []
         random_positions = []
         while len(random_parents) < 5:
-            random_position = random.randint(0,99)
+            random_position = random.randint(0,49)
             if random_position not in random_positions:
                 random_positions.append(random_position)
                 random_parents.append(population[random_position])
@@ -133,7 +133,7 @@ class EightQueens:
 def main():
     eigth_queens = EightQueens()
 
-    eigth_queens.generate_population(100)
+    eigth_queens.generate_population(50)
     solution = eigth_queens.solution()
     population_fitness = eigth_queens.rank()
     count = 0
