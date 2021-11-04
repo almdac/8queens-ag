@@ -91,12 +91,10 @@ class EightQueens:
         return [child1,child2]
     
     def mutate(self, child):
-        position1 = random.randint(0,7)
-        position2 = random.randint(0,7)
-        while position1 == position2:
-            position1 = random.randint(0,7)
-            position2 = random.randint(0,7)
-        child[position1], child[position2] = child[position2], child[position1]
+        points = random.sample(range(0, 7), 2)
+        disturbance = child[points[0]:points[1]+1]
+        random.shuffle(disturbance)
+        child[points[0]:points[1]+1] = disturbance
         return child
   
     def crossfill(self,child, parent,cut_point):
